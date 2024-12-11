@@ -42,9 +42,9 @@ public class VideoGameLibrary {
             System.out.println("\t\t\t\t     1. ADD NEW GAME");
             System.out.println("\t\t\t\t     2. REMOVE GAME");
             System.out.println("\t\t\t\t     3. DISPLAY ALL GAMES");
-            System.out.println("\t\t\t\t     4. RESTORE LAST REMOVED GAME");
-            System.out.println("\t\t\t\t     5. DISPLAY RECENTLY ADDED GAMES");
-            System.out.println("\t\t\t\t     6. SORT GAMES BY TITLE");
+            System.out.println("\t\t\t\t     4. DISPLAY RECENTLY ADDED GAMES");
+            System.out.println("\t\t\t\t     5. SORT GAMES BY TITLE");
+            System.out.println("\t\t\t\t     6. SORT GAMES BY ID");
             System.out.println("\t\t\t\t     7. EXIT");
             System.out.println("\t\t\t*************************************************");
             System.out.print("\t\t\t\t      Enter your choice: ");
@@ -56,9 +56,9 @@ public class VideoGameLibrary {
                 case 1 -> libraryStart = addGame(libraryStart);
                 case 2 -> libraryStart = removeGame(libraryStart);
                 case 3 -> displayGames(libraryStart);
-                case 4 -> libraryStart = restoreGame(libraryStart);
-                case 5 -> displayRecentGames();
-                case 6 -> libraryStart = sortGamesByTitle(libraryStart);
+                case 4 -> displayRecentGames();
+                case 5 -> libraryStart = sortGamesByTitle(libraryStart);
+                case 6 -> libraryStart = sortGamesById(libraryStart);
                 case 7 -> System.exit(0);
                 default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
             }
@@ -90,12 +90,51 @@ public class VideoGameLibrary {
         VideoGame newGame = new VideoGame();
         System.out.print("\n\t Enter Game Title: ");
         newGame.title = scanner.nextLine();
+    
+        // Check for duplicate title
+        boolean duplicateTitle;
+        do {
+            duplicateTitle = false;
+            VideoGame ptr = start;
+            while (ptr != null) {
+                if (ptr.title.equalsIgnoreCase(newGame.title)) {
+                    duplicateTitle = true;
+                    System.out.println("\n\t A game with this title already exists! Please enter a different title.");
+                    break;
+                }
+                ptr = ptr.next;
+            }
+            if (!duplicateTitle) {
+                break;  // Exit the loop if no duplicate title is found
+            }
+            System.out.print("\n\t Enter Game Title: ");
+            newGame.title = scanner.nextLine();
+        } while (duplicateTitle);
+    
         System.out.print("\n\t Enter Game Genre: ");
         newGame.genre = scanner.nextLine();
-        System.out.print("\n\t Enter Game ID: ");
-        newGame.id = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline
-
+    
+        // Ensure ID is unique
+        boolean uniqueId;
+        do {
+            uniqueId = true;
+            System.out.print("\n\t Enter Game ID: ");
+            newGame.id = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline
+    
+            // Check if ID already exists in the library
+            VideoGame ptr = start;
+            while (ptr != null) {
+                if (ptr.id == newGame.id) {
+                    uniqueId = false;
+                    System.out.println("\n\t ID already exists! Please enter a unique ID.");
+                    break;
+                }
+                ptr = ptr.next;
+            }
+        } while (!uniqueId);
+    
+        // Add the new game to the library
         if (start == null) {
             start = newGame;
         } else {
@@ -105,15 +144,17 @@ public class VideoGameLibrary {
             }
             temp.next = newGame;
         }
-
+    
+        // Add to the recent games queue
         recentGames.add(newGame);
         if (recentGames.size() > 5) {
             recentGames.poll(); // Keep only the last 5 added games
         }
-
+    
         System.out.println("\n\t Game added successfully!\n");
         return start;
     }
+    
 
     private static VideoGame removeGame(VideoGame start) {
         System.out.print("\n\n\t Enter the Game ID to remove: ");
@@ -166,28 +207,6 @@ public class VideoGameLibrary {
             ptr = ptr.next;
         }
     }
-
-    private static VideoGame restoreGame(VideoGame start) {
-        if (removedGames.isEmpty()) {
-            System.out.println("\n\t No games to restore.\n");
-            return start;
-        }
-
-        VideoGame restoredGame = removedGames.pop();
-        if (start == null) {
-            start = restoredGame;
-        } else {
-            VideoGame temp = start;
-            while (temp.next != null) {
-                temp = temp.next;
-            }
-            temp.next = restoredGame;
-        }
-
-        System.out.println("\n\t Game restored successfully!\n");
-        return start;
-    }
-
     private static void displayRecentGames() {
         if (recentGames.isEmpty()) {
             System.out.println("\n\t No recently added games to display.\n");
@@ -233,4 +252,35 @@ public class VideoGameLibrary {
         System.out.println("\n\t Games sorted by title successfully!\n");
         return newStart;
     }
+
+    private static VideoGame sortGamesById(VideoGame start) {
+        if (start == null || start.next == null) {
+            return start;
+        }
+    
+        // Convert the linked list to an ArrayList for sorting
+        List<VideoGame> gameList = new ArrayList<>();
+        VideoGame ptr = start;
+        while (ptr != null) {
+            gameList.add(ptr);
+            ptr = ptr.next;
+        }
+    
+        // Sort the games by ID
+        gameList.sort(Comparator.comparingInt(game -> game.id));
+    
+        // Reconstruct the linked list from the sorted ArrayList
+        VideoGame newStart = gameList.get(0);
+        VideoGame current = newStart;
+    
+        for (int i = 1; i < gameList.size(); i++) {
+            current.next = gameList.get(i);
+            current = current.next;
+        }
+        current.next = null;
+    
+        System.out.println("\n\t Games sorted by ID successfully!\n");
+        return newStart;
+    }
 }
+
