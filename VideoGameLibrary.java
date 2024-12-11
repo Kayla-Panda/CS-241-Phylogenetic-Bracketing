@@ -17,6 +17,7 @@ public class VideoGameLibrary {
     // Queue to handle recently added games
     private static final Queue<VideoGame> recentGames = new LinkedList<>();
 
+
     public static void main(String[] args) {
         libraryStart = initializeLibrary();
         greetings();
@@ -45,7 +46,8 @@ public class VideoGameLibrary {
             System.out.println("\t\t\t\t     4. DISPLAY RECENTLY ADDED GAMES");
             System.out.println("\t\t\t\t     5. SORT GAMES BY TITLE");
             System.out.println("\t\t\t\t     6. SORT GAMES BY ID");
-            System.out.println("\t\t\t\t     7. EXIT");
+            System.out.println("\t\t\t\t     7. SEARCH GAMES IN GENRE");
+            System.out.println("\t\t\t\t     8. EXIT");
             System.out.println("\t\t\t*************************************************");
             System.out.print("\t\t\t\t      Enter your choice: ");
 
@@ -59,10 +61,11 @@ public class VideoGameLibrary {
                 case 4 -> displayRecentGames();
                 case 5 -> libraryStart = sortGamesByTitle(libraryStart);
                 case 6 -> libraryStart = sortGamesById(libraryStart);
-                case 7 -> System.exit(0);
+                case 7 -> inGenre(libraryStart);
+                case 8 -> System.exit(0);
                 default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
             }
-        } while (choice != 7);
+        } while (choice != 8);
     }
 
     private static VideoGame initializeLibrary() {
@@ -281,6 +284,35 @@ public class VideoGameLibrary {
     
         System.out.println("\n\t Games sorted by ID successfully!\n");
         return newStart;
+    }
+
+    private static void inGenre(VideoGame games)
+    {
+        System.out.println("Enter a genre");
+        String genre = scanner.nextLine();
+        List<VideoGame> ingenre = new ArrayList<>();
+        VideoGame temp = games;
+        while(temp != null)
+        {
+            if(temp.genre.equals(genre))
+            {
+                ingenre.add(temp);
+            }
+            temp = temp.next;
+        }
+        if(ingenre==null)
+        {
+            System.out.println("\t No games in library are in that genre");
+        }
+        else
+        {
+            System.out.println("\t Games in " + genre + " genre");
+            for(VideoGame v:ingenre)
+            {
+                System.out.println("\t Game Title: " + v.title);
+                System.out.println("\t Game ID: " + v.id);
+            }
+        }
     }
 }
 
