@@ -50,7 +50,14 @@ public class VideoGameLibrary {
             System.out.println("\t\t\t\t     8. EXIT");
             System.out.println("\t\t\t*************************************************");
             System.out.print("\t\t\t\t      Enter your choice: ");
-
+            
+            // Check if the user enters a valid integer
+            while (!scanner.hasNextInt()) {
+                System.out.println("\n\t\t\t\t      Invalid input! Please enter a number between 1 and 7.");
+                scanner.nextLine(); // Consume the invalid input
+                System.out.print("\t\t\t\t      Enter your choice: ");
+            }
+            
             choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline
 
@@ -61,8 +68,7 @@ public class VideoGameLibrary {
                 case 4 -> displayRecentGames();
                 case 5 -> libraryStart = sortGamesByTitle(libraryStart);
                 case 6 -> libraryStart = sortGamesById(libraryStart);
-                case 7 -> inGenre(libraryStart);
-                case 8 -> System.exit(0);
+                case 7 -> System.exit(0);
                 default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
             }
         } while (choice != 8);
