@@ -48,19 +48,31 @@ public class VideoGameLibrary {
             System.out.println("\t\t\t\t     7. EXIT");
             System.out.println("\t\t\t*************************************************");
             System.out.print("\t\t\t\t      Enter your choice: ");
-
+            
+            // Check if the user enters a valid integer
+            while (!scanner.hasNextInt()) {
+                System.out.println("\n\t\t\t\t      Invalid input! Please enter a number between 1 and 7.");
+                scanner.nextLine(); // Consume the invalid input
+                System.out.print("\t\t\t\t      Enter your choice: ");
+            }
+            
             choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline
-
-            switch (choice) {
-                case 1 -> libraryStart = addGame(libraryStart);
-                case 2 -> libraryStart = removeGame(libraryStart);
-                case 3 -> displayGames(libraryStart);
-                case 4 -> displayRecentGames();
-                case 5 -> libraryStart = sortGamesByTitle(libraryStart);
-                case 6 -> libraryStart = sortGamesById(libraryStart);
-                case 7 -> System.exit(0);
-                default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
+    
+            // Check if the choice is valid
+            if (choice < 1 || choice > 7) {
+                System.out.println("\n\t\t\t\t      ...Invalid Option! Please choose between 1 and 7.\n");
+            } else {
+                // Process the valid choice
+                switch (choice) {
+                    case 1 -> libraryStart = addGame(libraryStart);
+                    case 2 -> libraryStart = removeGame(libraryStart);
+                    case 3 -> displayGames(libraryStart);
+                    case 4 -> displayRecentGames();
+                    case 5 -> libraryStart = sortGamesByTitle(libraryStart);
+                    case 6 -> libraryStart = sortGamesById(libraryStart);
+                    case 7 -> System.exit(0);
+                }
             }
         } while (choice != 7);
     }
