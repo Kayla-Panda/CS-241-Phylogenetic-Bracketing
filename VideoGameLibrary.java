@@ -17,7 +17,6 @@ public class VideoGameLibrary {
     // Queue to handle recently added games
     private static final Queue<VideoGame> recentGames = new LinkedList<>();
 
-
     public static void main(String[] args) {
         libraryStart = initializeLibrary();
         greetings();
@@ -68,7 +67,8 @@ public class VideoGameLibrary {
                 case 4 -> displayRecentGames();
                 case 5 -> libraryStart = sortGamesByTitle(libraryStart);
                 case 6 -> libraryStart = sortGamesById(libraryStart);
-                case 7 -> System.exit(0);
+                case 7 -> inGenre(libraryStart);  // Search games in a specific genre
+                case 8 -> System.exit(0);
                 default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
             }
         } while (choice != 8);
@@ -292,33 +292,33 @@ public class VideoGameLibrary {
         return newStart;
     }
 
-    private static void inGenre(VideoGame games)
-    {
-        System.out.println("Enter a genre");
+    private static void inGenre(VideoGame games) {
+        System.out.print("\nEnter a genre: ");
         String genre = scanner.nextLine();
         List<VideoGame> ingenre = new ArrayList<>();
         VideoGame temp = games;
-        while(temp != null)
-        {
-            if(temp.genre.equals(genre))
-            {
+        
+        // Collect all games that match the given genre
+        while (temp != null) {
+            if (temp.genre.equalsIgnoreCase(genre)) {
                 ingenre.add(temp);
             }
             temp = temp.next;
         }
-        if(ingenre==null)
-        {
-            System.out.println("\t No games in library are in that genre");
-        }
-        else
-        {
-            System.out.println("\t Games in " + genre + " genre");
-            for(VideoGame v:ingenre)
-            {
+    
+        // Check if any games were found in the given genre
+        if (ingenre.isEmpty()) {
+            System.out.println("\tNo games in library are in that genre.\n");
+        } else {
+            // Output the list of games in the specified genre
+            System.out.println("\n\t************* Games in '" + genre + "' Genre *************\n");
+            for (VideoGame v : ingenre) {
+                System.out.println("\t_________________________________________");
                 System.out.println("\t Game Title: " + v.title);
+                System.out.println("\t Genre: " + v.genre);
                 System.out.println("\t Game ID: " + v.id);
+                System.out.println("\t_________________________________________");
             }
         }
     }
 }
-
