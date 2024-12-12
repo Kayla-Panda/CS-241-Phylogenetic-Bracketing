@@ -17,6 +17,8 @@ public class VideoGameLibrary {
     // Queue to handle recently added games
     private static final Queue<VideoGame> recentGames = new LinkedList<>();
 
+    private static final HashMap<Integer, VideoGame> gameMap = new HashMap<>();
+
     public static void main(String[] args) {
         libraryStart = initializeLibrary();
         greetings();
@@ -46,32 +48,40 @@ public class VideoGameLibrary {
             System.out.println("\t\t\t\t     5. SORT GAMES BY TITLE");
             System.out.println("\t\t\t\t     6. SORT GAMES BY ID");
             System.out.println("\t\t\t\t     7. SEARCH GAMES IN GENRE");
-            System.out.println("\t\t\t\t     8. EXIT");
+            System.out.println("\t\t\t\t     8. SEARCH GAME BY ID");
+            System.out.println("\t\t\t\t     9. EXIT");
             System.out.println("\t\t\t*************************************************");
             System.out.print("\t\t\t\t      Enter your choice: ");
             
             // Check if the user enters a valid integer
             while (!scanner.hasNextInt()) {
-                System.out.println("\n\t\t\t\t      Invalid input! Please enter a number between 1 and 7.");
+                System.out.println("\n\t\t\t\t      Invalid input! Please enter a number between 1 and 9.");
                 scanner.nextLine(); // Consume the invalid input
                 System.out.print("\t\t\t\t      Enter your choice: ");
             }
             
             choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline
-
+    
             switch (choice) {
                 case 1 -> libraryStart = addGame(libraryStart);
                 case 2 -> libraryStart = removeGame(libraryStart);
                 case 3 -> displayGames(libraryStart);
                 case 4 -> displayRecentGames();
-                case 5 -> libraryStart = sortGamesByTitle(libraryStart);
+                case 5 -> {
+                    libraryStart = mergeSortByTitle(libraryStart);
+                    System.out.println("\n\t Games sorted by Title successfully!\n");
+                }
                 case 6 -> libraryStart = sortGamesById(libraryStart);
-                case 7 -> inGenre(libraryStart);  // Search games in a specific genre
-                case 8 -> System.exit(0);
+                case 7 -> inGenre(libraryStart);
+                case 8 -> findGameById(); // Return to menu after execution
+                case 9 -> {
+                    System.out.println("\n\t Exiting the Video Game Library. Goodbye!");
+                    System.exit(0);
+                }
                 default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
             }
-        } while (choice != 8);
+        } while (true); // Keep showing the menu until the user exits
     }
 
     private static VideoGame initializeLibrary() {
@@ -79,19 +89,25 @@ public class VideoGameLibrary {
         game1.title = "The Legend of Zelda: Breath of the Wild";
         game1.genre = "Action-Adventure";
         game1.id = 1;
-
+    
         VideoGame game2 = new VideoGame();
         game2.title = "Elden Ring";
         game2.genre = "RPG";
         game2.id = 2;
-
+    
         VideoGame game3 = new VideoGame();
         game3.title = "Minecraft";
         game3.genre = "Sandbox";
         game3.id = 3;
-
+    
         game1.next = game2;
         game2.next = game3;
+    
+        // Populate the gameMap with the initialized games
+        gameMap.put(game1.id, game1);
+        gameMap.put(game2.id, game2);
+        gameMap.put(game3.id, game3);
+    
         return game1;
     }
 
@@ -114,7 +130,7 @@ public class VideoGameLibrary {
                 ptr = ptr.next;
             }
             if (!duplicateTitle) {
-                break;  // Exit the loop if no duplicate title is found
+                break;
             }
             System.out.print("\n\t Enter Game Title: ");
             newGame.title = scanner.nextLine();
@@ -131,15 +147,9 @@ public class VideoGameLibrary {
             newGame.id = scanner.nextInt();
             scanner.nextLine(); // Consume the newline
     
-            // Check if ID already exists in the library
-            VideoGame ptr = start;
-            while (ptr != null) {
-                if (ptr.id == newGame.id) {
-                    uniqueId = false;
-                    System.out.println("\n\t ID already exists! Please enter a unique ID.");
-                    break;
-                }
-                ptr = ptr.next;
+            if (gameMap.containsKey(newGame.id)) {
+                uniqueId = false;
+                System.out.println("\n\t ID already exists! Please enter a unique ID.");
             }
         } while (!uniqueId);
     
@@ -154,6 +164,9 @@ public class VideoGameLibrary {
             temp.next = newGame;
         }
     
+        // Update the HashMap
+        gameMap.put(newGame.id, newGame);
+    
         // Add to the recent games queue
         recentGames.add(newGame);
         if (recentGames.size() > 5) {
@@ -162,49 +175,79 @@ public class VideoGameLibrary {
     
         System.out.println("\n\t Game added successfully!\n");
         return start;
-    }
-    
+    }    
 
     private static VideoGame removeGame(VideoGame start) {
+        if (start == null) {
+            System.out.println("\n\t The library is empty. No games to remove.\n");
+            return null;
+        }
+    
         System.out.print("\n\n\t Enter the Game ID to remove: ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("\n\t Invalid input! Please enter a numeric ID.");
+            scanner.nextLine(); // Consume invalid input
+            return start;
+        }
         int id = scanner.nextInt();
         scanner.nextLine(); // Consume the newline
-
-        VideoGame ptr = start;
-        VideoGame prev = null;
-        boolean found = false;
-
-        while (ptr != null) {
-            if (ptr.id == id) {
-                found = true;
-                break;
-            }
-            prev = ptr;
-            ptr = ptr.next;
-        }
-
-        if (!found) {
+    
+        if (!gameMap.containsKey(id)) {
             System.out.println("\n\t Game with the given ID not found!\n");
             return start;
         }
-
-        if (prev == null) {
-            start = ptr.next;
+    
+        VideoGame removed = gameMap.remove(id);
+        if (start == removed) {
+            start = start.next;
         } else {
-            prev.next = ptr.next;
+            VideoGame current = start;
+            while (current.next != removed) {
+                current = current.next;
+            }
+            current.next = removed.next;
         }
-
-        removedGames.push(ptr);
+    
+        removedGames.push(removed);
         System.out.println("\n\t Game removed successfully!\n");
         return start;
     }
 
-    private static void displayGames(VideoGame start) {
-        if (start == null) {
-            System.out.println("\n\t No games in the library.\n");
+    // Add a method to quickly find a game by its ID 
+    private static void findGameById() {
+        if (libraryStart == null) {
+            System.out.println("\n\t The library is empty. No games to search for.\n");
             return;
         }
+    
+        System.out.print("\n\n\t Enter the Game ID to find: ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("\n\t Invalid input! Please enter a numeric ID.");
+            scanner.nextLine(); // Consume invalid input
+            return;
+        }
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline
+    
+        VideoGame game = gameMap.get(id);
+        if (game != null) {
+            System.out.println("\n\t************* Game "+ id + " found *************");
+            System.out.println("\t_________________________________________");
+            System.out.println("\t Title: " + game.title);
+            System.out.println("\t Genre: " + game.genre);
+            System.out.println("\t ID: " + game.id);
+            System.out.println("\t_________________________________________");
+        } else {
+            System.out.println("\n\t Game with the given ID not found!");
+        }
+    }
 
+    private static void displayGames(VideoGame start) {
+        if (start == null) {
+            System.out.println("\n\t The library is empty. No games to display.\n");
+            return;
+        }
+    
         VideoGame ptr = start;
         System.out.println("\n\t************* Video Game Library *************\n");
         while (ptr != null) {
@@ -232,42 +275,54 @@ public class VideoGameLibrary {
         }
     }
     
-    private static VideoGame sortGamesByTitle(VideoGame start) {
-        if (start == null || start.next == null) {
-            return start;
+    private static VideoGame mergeSortByTitle(VideoGame head) {
+        if (head == null || head.next == null) {
+            return head; // Already sorted
         }
+    
+        VideoGame middle = getMiddle(head);
+        VideoGame nextOfMiddle = middle.next;
+        middle.next = null;
+    
+        VideoGame left = mergeSortByTitle(head);
+        VideoGame right = mergeSortByTitle(nextOfMiddle);
+    
+        return mergeByTitle(left, right);
+    }    
 
-        // Convert the linked list to an ArrayList for sorting
-        List<VideoGame> gameList = new ArrayList<>();
-        VideoGame ptr = start;
-        while (ptr != null) {
-            gameList.add(ptr);
-            ptr = ptr.next;
+    private static VideoGame getMiddle(VideoGame head) { 
+        if (head == null) { 
+            return head; 
         }
+         
+        VideoGame slow = head, fast = head; 
+        while (fast.next != null && fast.next.next != null) { 
+            slow = slow.next; fast = fast.next.next; 
+        } 
+        return slow; 
+    }
 
-        // Sort the games alphabetically by title
-        gameList.sort(Comparator.comparing(game -> game.title.toLowerCase()));
+    private static VideoGame mergeByTitle(VideoGame left, VideoGame right) { 
+        VideoGame result = null; 
+        if (left == null) return right; 
+        if (right == null) return left; 
 
-        // Reconstruct the linked list
-        VideoGame newStart = gameList.get(0);
-        VideoGame current = newStart;
-
-        for (int i = 1; i < gameList.size(); i++) {
-            current.next = gameList.get(i);
-            current = current.next;
-        }
-        current.next = null;
-
-        System.out.println("\n\t Games sorted by title successfully!\n");
-        return newStart;
+        if (left.title.compareToIgnoreCase(right.title) <= 0) { 
+            result = left; result.next = mergeByTitle(left.next, right); 
+        } 
+        else { 
+            result = right; 
+            result.next = mergeByTitle(left, right.next); 
+        } 
+        return result; 
     }
 
     private static VideoGame sortGamesById(VideoGame start) {
         if (start == null || start.next == null) {
+            System.out.println("\n\t The library is empty or contains only one game. Sorting not required.\n");
             return start;
         }
     
-        // Convert the linked list to an ArrayList for sorting
         List<VideoGame> gameList = new ArrayList<>();
         VideoGame ptr = start;
         while (ptr != null) {
@@ -275,10 +330,8 @@ public class VideoGameLibrary {
             ptr = ptr.next;
         }
     
-        // Sort the games by ID
         gameList.sort(Comparator.comparingInt(game -> game.id));
     
-        // Reconstruct the linked list from the sorted ArrayList
         VideoGame newStart = gameList.get(0);
         VideoGame current = newStart;
     
@@ -293,12 +346,16 @@ public class VideoGameLibrary {
     }
 
     private static void inGenre(VideoGame games) {
+        if (games == null) {
+            System.out.println("\n\t The library is empty. No games to search for.\n");
+            return;
+        }
+    
         System.out.print("\nEnter a genre: ");
         String genre = scanner.nextLine();
         List<VideoGame> ingenre = new ArrayList<>();
         VideoGame temp = games;
-        
-        // Collect all games that match the given genre
+    
         while (temp != null) {
             if (temp.genre.equalsIgnoreCase(genre)) {
                 ingenre.add(temp);
@@ -306,11 +363,9 @@ public class VideoGameLibrary {
             temp = temp.next;
         }
     
-        // Check if any games were found in the given genre
         if (ingenre.isEmpty()) {
-            System.out.println("\tNo games in library are in that genre.\n");
+            System.out.println("\tNo games in the library are in that genre.\n");
         } else {
-            // Output the list of games in the specified genre
             System.out.println("\n\t************* Games in '" + genre + "' Genre *************\n");
             for (VideoGame v : ingenre) {
                 System.out.println("\t_________________________________________");
