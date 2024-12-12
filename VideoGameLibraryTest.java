@@ -27,13 +27,33 @@ class VideoGameLibraryTest {
             genre = "Sandbox";
             id = 3;
         }});
+        VideoGameLibrary.gameMap.put(4, new VideoGame() {{
+            title = "Diablo 5";
+            genre = "RPG";
+            id = 4;
+        }});
+        VideoGameLibrary.gameMap.put(5, new VideoGame() {{
+            title = "The Witcher";
+            genre = "RPG";
+            id = 5;
+        }});
+        VideoGameLibrary.gameMap.put(6, new VideoGame() {{
+            title = "Dark Souls 3";
+            genre = "RPG";
+            id = 6;
+        }});
+        VideoGameLibrary.gameMap.put(7, new VideoGame() {{
+            title = "Grand Theft Auto";
+            genre = "Sandbox";
+            id = 7;
+        }});
     }
 
     @Test
     void testMergeSortByTitle() {
         VideoGameLibrary.libraryStart = VideoGameLibrary.mergeSortByTitle(VideoGameLibrary.libraryStart);
         assertNotNull(VideoGameLibrary.libraryStart);
-        assertEquals("Elden Ring", VideoGameLibrary.libraryStart.title);
+        assertEquals("Dark Souls 3", VideoGameLibrary.libraryStart.title);
     }
 
     @Test
