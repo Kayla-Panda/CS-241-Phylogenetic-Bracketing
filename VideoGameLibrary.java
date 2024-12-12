@@ -8,16 +8,16 @@ class VideoGame {
 }
 
 public class VideoGameLibrary {
-    private static VideoGame libraryStart = null;
-    private static final Scanner scanner = new Scanner(System.in);
+    public static VideoGame libraryStart = null;
+    public static final Scanner scanner = new Scanner(System.in);
 
     // Stack to manage removed games
-    private static final Stack<VideoGame> removedGames = new Stack<>();
+    public static final Stack<VideoGame> removedGames = new Stack<>();
 
     // Queue to handle recently added games
-    private static final Queue<VideoGame> recentGames = new LinkedList<>();
+    public static final Queue<VideoGame> recentGames = new LinkedList<>();
 
-    private static final HashMap<Integer, VideoGame> gameMap = new HashMap<>();
+    public static final HashMap<Integer, VideoGame> gameMap = new HashMap<>();
 
     public static void main(String[] args) {
         libraryStart = initializeLibrary();
@@ -25,7 +25,7 @@ public class VideoGameLibrary {
         mainMenu();
     }
 
-    private static void greetings() {
+    public static void greetings() {
         System.out.println("\n\n");
         System.out.println("\t\t\t     ****************************************");
         System.out.println("\t\t\t     *                                      *");
@@ -36,7 +36,7 @@ public class VideoGameLibrary {
         scanner.nextLine();
     }
 
-    private static void mainMenu() {
+    public static void mainMenu() {
         int choice;
         do {
             System.out.println("\n\t\t\t*************************************************");
@@ -84,7 +84,7 @@ public class VideoGameLibrary {
         } while (true); // Keep showing the menu until the user exits
     }
 
-    private static VideoGame initializeLibrary() {
+    public static VideoGame initializeLibrary() {
         VideoGame game1 = new VideoGame();
         game1.title = "The Legend of Zelda: Breath of the Wild";
         game1.genre = "Action-Adventure";
@@ -111,7 +111,7 @@ public class VideoGameLibrary {
         return game1;
     }
 
-    private static VideoGame addGame(VideoGame start) {
+    public static VideoGame addGame(VideoGame start) {
         VideoGame newGame = new VideoGame();
         System.out.print("\n\t Enter Game Title: ");
         newGame.title = scanner.nextLine();
@@ -177,7 +177,7 @@ public class VideoGameLibrary {
         return start;
     }    
 
-    private static VideoGame removeGame(VideoGame start) {
+    public static VideoGame removeGame(VideoGame start) {
         if (start == null) {
             System.out.println("\n\t The library is empty. No games to remove.\n");
             return null;
@@ -214,7 +214,7 @@ public class VideoGameLibrary {
     }
 
     // Add a method to quickly find a game by its ID 
-    private static void findGameById() {
+    public static void findGameById() {
         if (libraryStart == null) {
             System.out.println("\n\t The library is empty. No games to search for.\n");
             return;
@@ -242,7 +242,7 @@ public class VideoGameLibrary {
         }
     }
 
-    private static void displayGames(VideoGame start) {
+    public static void displayGames(VideoGame start) {
         if (start == null) {
             System.out.println("\n\t The library is empty. No games to display.\n");
             return;
@@ -259,7 +259,7 @@ public class VideoGameLibrary {
             ptr = ptr.next;
         }
     }
-    private static void displayRecentGames() {
+    public static void displayRecentGames() {
         if (recentGames.isEmpty()) {
             System.out.println("\n\t No recently added games to display.\n");
             return;
@@ -275,7 +275,7 @@ public class VideoGameLibrary {
         }
     }
     
-    private static VideoGame mergeSortByTitle(VideoGame head) {
+    public static VideoGame mergeSortByTitle(VideoGame head) {
         if (head == null || head.next == null) {
             return head; // Already sorted
         }
@@ -290,7 +290,7 @@ public class VideoGameLibrary {
         return mergeByTitle(left, right);
     }    
 
-    private static VideoGame getMiddle(VideoGame head) { 
+    public static VideoGame getMiddle(VideoGame head) { 
         if (head == null) { 
             return head; 
         }
@@ -302,7 +302,7 @@ public class VideoGameLibrary {
         return slow; 
     }
 
-    private static VideoGame mergeByTitle(VideoGame left, VideoGame right) { 
+    public static VideoGame mergeByTitle(VideoGame left, VideoGame right) { 
         VideoGame result = null; 
         if (left == null) return right; 
         if (right == null) return left; 
@@ -317,7 +317,7 @@ public class VideoGameLibrary {
         return result; 
     }
 
-    private static VideoGame sortGamesById(VideoGame start) {
+    public static VideoGame sortGamesById(VideoGame start) {
         if (start == null || start.next == null) {
             System.out.println("\n\t The library is empty or contains only one game. Sorting not required.\n");
             return start;
@@ -345,7 +345,7 @@ public class VideoGameLibrary {
         return newStart;
     }
 
-    private static void inGenre(VideoGame games) {
+    public static void inGenre(VideoGame games) {
         if (games == null) {
             System.out.println("\n\t The library is empty. No games to search for.\n");
             return;
