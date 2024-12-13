@@ -76,7 +76,7 @@ public class VideoGameLibrary {
                     System.out.println("\n\t Exiting the Video Game Library. Goodbye!");
                     System.exit(0);
                 }
-                default -> System.out.println("\n\t\t\t\t      ...Invalid Option!...\n");
+                default -> System.out.println("\n\t\t\t\t      Invalid input! Please enter a number between 1 and 9.");
             }
         } while (true); 
     }
@@ -283,14 +283,15 @@ public class VideoGameLibrary {
             System.out.println("\n\t No recently added games to display.\n");
             return;
         }
-
         System.out.println("\n\t************* Recently Added Games *************\n");
         for (VideoGame game : recentGames) {
-            System.out.println("\t_________________________________________");
-            System.out.println("\t Game Title: " + game.title);
-            System.out.println("\t Genre: " + game.genre);
-            System.out.println("\t Game ID: " + game.id);
-            System.out.println("\t_________________________________________");
+            if (!removedGames.contains(game)){
+                System.out.println("\t_________________________________________");
+                System.out.println("\t Game Title: " + game.title);
+                System.out.println("\t Genre: " + game.genre);
+                System.out.println("\t Game ID: " + game.id);
+                System.out.println("\t_________________________________________");
+            }
         }
     }
     
